@@ -1,0 +1,16 @@
+﻿"Infos (Europe/Paris)";"Infos (Europe/Paris)";"Infos (Europe/Paris)";"Pièces ()";"Billets ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Fidelite ()";"Fidelite ()";"FDC ()"
+N°;Date;Heure;Total;Total;Esp.;C.B.;Jeton;Rendu*;Total;Util.*¹;Charg.*²;Total*³
+15;2024-10-25;17:07:28;166,00;1120,00;1339,60;1864,70;0,00;5,00;3199,30;0,00;0,00;218,20
+16;2024-11-21;15:44:31;446,30;1370,00;1793,60;2821,10;0,00;14,50;4600,20;0,00;0,00;201,70
+17;2024-12-13;18:16:44;174,40;1250,00;1404,00;1930,20;0,00;0,00;3334,20;0,00;0,00;181,30
+18;2025-01-02;17:00:41;113,10;1180,00;1313,30;1925,00;0,00;0,00;3238,30;0,00;0,00;201,50
+19;2025-01-14;15:09:02;95,20;475,00;612,60;1258,40;0,00;21,00;1850,00;0,00;0,00;222,90
+20;2025-02-18;11:46:31;412,20;1790,00;2192,30;3036,60;0,00;5,50;5223,40;0,00;0,00;216,30
+21;2025-03-20;15:36:09;117,40;1645,00;1736,40;2686,20;0,00;5,00;4417,60;0,00;0,00;185,30
+22;2025-04-24;14:56:08;276,80;1520,00;1831,20;2927,30;0,00;0,00;4758,50;0,00;0,00;221,50
+23;2025-05-22;17:26:18;77,80;1590,00;1655,80;2072,30;0,00;9,00;3719,10;0,00;0,00;205,70
+24;2025-06-05;14:50:09;177,60;480,00;676,40;1041,80;0,00;0,00;1718,20;0,00;0,00;224,50
+"*Les remboursements sont soustraits du Total chiffre affaires.
+*¹Utilisation : Les paiements en fidelitée ne sont pas comptabilisés dans le chiffre d'affaires.
+*²Chargement :Les chargements clé sont déja inclus dans le chiffre d'affaires espèces.
+*³Fond de caisse : Valeur indicative estimée par les monnayeurs (imprécises)."

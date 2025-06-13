@@ -1,0 +1,8 @@
+﻿"Infos (Europe/Paris)";"Infos (Europe/Paris)";"Infos (Europe/Paris)";"Pièces ()";"Billets ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Chiffre Affaire ()";"Fidelite ()";"Fidelite ()";"FDC ()"
+N°;Date;Heure;Total;Total;Esp.;C.B.;Jeton;Rendu*;Total;Util.*¹;Charg.*²;Total*³
+1;2025-05-14;14:06:37;5180,50;43090,00;51835,00;80071,80;0,00;144,48;131762,32;0,00;0,00;185,70
+2;2025-05-26;09:05:10;10,00;225,00;278,40;714,20;0,00;40,00;952,60;0,00;0,00;189,10
+"*Les remboursements sont soustraits du Total chiffre affaires.
+*¹Utilisation : Les paiements en fidelitée ne sont pas comptabilisés dans le chiffre d'affaires.
+*²Chargement :Les chargements clé sont déja inclus dans le chiffre d'affaires espèces.
+*³Fond de caisse : Valeur indicative estimée par les monnayeurs (imprécises)."
