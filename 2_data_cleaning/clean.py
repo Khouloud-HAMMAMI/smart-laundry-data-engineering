@@ -213,9 +213,100 @@ def clean_remplissage(input_path, output_path):
     print(f"[✓] Données nettoyées sauvegardées dans : {output_path}")
 
 
-# Exemple d'utilisation
+
+
+
+def clean_releves(input_path, output_path):
+    # Lecture brute
+    df_raw = pd.read_csv(input_path, header=None, sep=';', encoding='utf-8-sig')
+
+    # Extraire les vraies colonnes depuis la deuxième ligne
+    new_columns = df_raw.iloc[1].tolist()
+    df = df_raw[2:].copy()
+    df.columns = new_columns
+
+    print("[DEBUG] Colonnes brutes :", df.columns.tolist())
+
+    # Nettoyage des noms de colonnes
+    cleaned_columns = [str(col)
+        .replace('\ufeff', '')
+        .replace('(€)', '')
+        .replace('(\x80)', '')
+        .replace('*¹', '')
+        .replace('*²', '')
+        .replace('*³', '')
+        .replace("(", "")
+        .replace(")", "")
+        .replace(".", "")
+        .strip()
+        .lower()
+        .replace(" ", "_")
+        for col in df.columns
+    ]
+    df.columns = cleaned_columns
+
+    print("[DEBUG] Colonnes nettoyées :", df.columns.tolist())
+
+    # Renommage clair
+    rename_map = {
+        'n°': 'id',  # <- corrigé ici
+        'date': 'date',
+        'heure': 'heure',
+        'total': 'total_pieces',
+        'pieces': 'pieces',
+        'billets': 'billets',
+        'chiffre_affaire': 'espèces',
+        'chiffre_affaire_1': 'cb',
+        'chiffre_affaire_2': 'jeton',
+        'chiffre_affaire_3': 'rendu',
+        'chiffre_affaire_4': 'total_ca',
+        'fidelite': 'fidelite_util',
+        'fidelite_1': 'fidelite_charge',
+        'fdc': 'fdc'
+    }
+
+    df = df.rename(columns=rename_map)
+
+    # Conversion numérique
+    montant_cols = ['pieces', 'billets', 'espèces', 'cb', 'jeton', 'rendu',
+                    'total_ca', 'fidelite_util', 'fidelite_charge', 'fdc']
+    for col in montant_cols:
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.replace(",", ".").str.strip()
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        else:
+            print(f"[WARNING] Colonne manquante : {col}")
+
+    # Fusion date + heure
+    if 'date' in df.columns and 'heure' in df.columns:
+        df['datetime'] = pd.to_datetime(df['date'] + ' ' + df['heure'], errors='coerce')
+        df.drop(columns=['date', 'heure'], inplace=True)
+    else:
+        print("[ERREUR] 'date' et/ou 'heure' manquante(s).")
+        return
+
+    # Nettoyage ID
+    if 'id' in df.columns:
+        df['id'] = pd.to_numeric(df['id'], errors='coerce').astype('Int64')
+
+    # Suppression des lignes sans datetime
+    df = df.dropna(subset=['datetime'])
+
+    # Réorganisation des colonnes
+    ordered = ['id', 'datetime'] + [col for col in montant_cols if col in df.columns]
+    ordered = [col for col in ordered if col in df.columns]  # sécurité ajoutée
+    print("[DEBUG] Colonnes finales disponibles :", df.columns.tolist())
+    df = df[ordered]
+
+    # Sauvegarde
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False)
+    print(f"[✓] Données nettoyées sauvegardées dans : {output_path}")
+
+
+# Exemple d'exécution
 if __name__ == "__main__":
-    clean_remplissage(
-        "data/laverie1/remplissages.csv",
-        "data_cleaned/laverie1/remplissage_cleaned.csv"
+    clean_releves(
+        "data/laverie1/releves.csv",
+        "data_cleaned/laverie1/releves_cleaned.csv"
     )
