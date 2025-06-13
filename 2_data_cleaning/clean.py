@@ -54,9 +54,168 @@ def clean_transactions_transaction(filepath, output_path):
 
     return df
 
+def clean_transactions_jour(input_path, output_path):
+    # Lire le fichier CSV en détectant le bon séparateur
+    df = pd.read_csv(input_path, sep=None, engine="python")
+
+    # Nettoyer les noms de colonnes
+    df.columns = [col.replace('\ufeff', '').strip().lower().replace(" ", "_")
+                     .replace("(€)", "").replace("(\x80)", "")
+                     .replace(".", "").replace("é", "e")
+                     for col in df.columns]
+
+    print("[DEBUG] Colonnes nettoyées :", df.columns.tolist())
+
+    # Renommer pour consistance
+    rename_map = {
+        'date(europe/paris)': 'date',
+        'ca_esp_': 'ca_esp',
+        'ca_cb_': 'ca_cb',
+        'jeton_': 'jeton',
+        'fidelite_': 'fidelite',
+        'remb_': 'remb',
+        'ca_tot_': 'ca_tot'
+    }
+    df = df.rename(columns=rename_map)
+
+    # Supprimer les lignes entièrement vides
+    df = df.dropna(how='all')
+
+    # Supprimer les lignes où toutes les colonnes sauf date sont manquantes
+    df = df.dropna(subset=['ca_esp', 'ca_cb', 'jeton', 'fidelite', 'remb', 'ca_tot'], how='all')
+
+    # Conversion des colonnes numériques (virgule → point)
+    montant_cols = ['ca_esp', 'ca_cb', 'jeton', 'fidelite', 'remb', 'ca_tot']
+    for col in montant_cols:
+        df[col] = df[col].astype(str).str.replace(",", ".").str.strip()
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # Conversion de la date
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+    # Supprimer les lignes sans date valide
+    df = df.dropna(subset=['date'])
+
+    # Répertoire de sortie
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # Sauvegarder
+    df.to_csv(output_path, index=False)
+    print(f"[✓] Données nettoyées sauvegardées dans : {output_path}")
+
+# Remplissage
+
+from collections import Counter
+def clean_remplissage(input_path, output_path):
+    df_raw = pd.read_csv(input_path, header=None, sep=';', encoding='utf-8-sig')
+
+    # Utiliser la première ligne comme noms de colonnes
+    new_columns = df_raw.iloc[0].tolist()
+    df = df_raw[1:].copy()
+    df.columns = new_columns
+
+    print("[DEBUG] Colonnes d'origine récupérées depuis la ligne 1 :", df.columns.tolist())
+
+    # Nettoyage des noms de colonnes
+    cleaned_columns = [str(col)
+                       .replace('\ufeff', '')
+                       .replace('(€)', '')
+                       .replace('(\x80)', '')
+                       .replace('*¹', '')
+                       .replace('(', '')
+                       .replace(')', '')
+                       .strip()
+                       .lower()
+                       .replace(" ", "_")
+                       .replace('.', '')
+                       for col in df.columns]
+
+    # Rendre les noms uniques
+    counter = Counter()
+    final_columns = []
+    for col in cleaned_columns:
+        if counter[col]:
+            final_columns.append(f"{col}_{counter[col]}")
+        else:
+            final_columns.append(col)
+        counter[col] += 1
+
+    df.columns = final_columns
+    print("[DEBUG] Colonnes après nettoyage et renommage unique :", df.columns.tolist())
+
+    # Renommage lisible
+    rename_map = {
+        'infos_europe/paris': 'id',
+        'infos_europe/paris_1': 'date',
+        'infos_europe/paris_2': 'heure',
+        'remplissage': 'total',
+        'remplissage_1': 'trop_plein',
+        'details_remplissage_nombre': 'deux_euros',
+        'details_remplissage_nombre_1': 'un_euro',
+        'details_remplissage_nombre_2': 'cinquante_centimes',
+        'details_remplissage_nombre_3': 'vingt_centimes',
+        'details_remplissage_nombre_4': 'dix_centimes',
+        'etat_fdc': 'etat_avant',
+        'etat_fdc_1': 'etat_apres',
+    }
+
+    df = df.rename(columns=rename_map)
+
+    # Conversion des montants
+    montant_cols = ['total', 'trop_plein', 'etat_avant', 'etat_apres']
+    for col in montant_cols:
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.replace(",", ".").str.strip()
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        else:
+            print(f"[WARNING] Colonne manquante : {col}")
+
+    # Conversion des pièces
+    piece_cols = ['deux_euros', 'un_euro', 'cinquante_centimes', 'vingt_centimes', 'dix_centimes']
+    for col in piece_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        else:
+            print(f"[WARNING] Colonne manquante : {col}")
+
+    # Fusion date + heure
+    if 'heure' in df.columns and 'date' in df.columns:
+        df['datetime'] = pd.to_datetime(df['date'] + ' ' + df['heure'], errors='coerce')
+        df.drop(columns=['date', 'heure'], inplace=True)
+    elif 'date' in df.columns:
+        df['datetime'] = pd.to_datetime(df['date'], errors='coerce')
+        df.drop(columns=['date'], inplace=True)
+    else:
+        print("[ERREUR] Les colonnes 'date' et 'heure' sont absentes, impossible de créer 'datetime'.")
+        return
+
+    # Nettoyage des IDs
+    if 'id' in df.columns:
+        df['id'] = pd.to_numeric(df['id'], errors='coerce').astype('Int64')
+
+    # Supprimer les lignes sans datetime
+    if 'datetime' in df.columns:
+        df = df.dropna(subset=['datetime'])
+    else:
+        print("[ERREUR] La colonne 'datetime' est absente, abandon du nettoyage.")
+        return
+
+    # Réorganisation des colonnes
+    ordered_cols = ['id', 'datetime', 'total', 'trop_plein',
+                    'deux_euros', 'un_euro', 'cinquante_centimes',
+                    'vingt_centimes', 'dix_centimes',
+                    'etat_avant', 'etat_apres']
+    df = df[[col for col in ordered_cols if col in df.columns]]
+
+    # Sauvegarde
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False)
+    print(f"[✓] Données nettoyées sauvegardées dans : {output_path}")
+
+
 # Exemple d'utilisation
 if __name__ == "__main__":
-    df_cleaned = clean_transactions_transaction(
-        "data/laverie1/transactions_transaction.csv",
-        "data_cleaned/laverie1/transactions_transaction_cleaned.csv"
+    clean_remplissage(
+        "data/laverie1/remplissages.csv",
+        "data_cleaned/laverie1/remplissage_cleaned.csv"
     )
