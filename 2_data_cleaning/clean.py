@@ -160,12 +160,8 @@ def clean_remplissage(input_path, output_path):
     }
 
     df = df.rename(columns=rename_map)
+    df = df.dropna(subset=["total"])  # ou remplir avec la moyenne
 
-   
-
-    # Nettoyage : gestion des NaN
-    # Option 1 : remplir par la moyenne globale
-    df["remplissage_moyen"].fillna(df["remplissage_moyen"].mean(), inplace=True)
     
 
     # Conversion des montants
