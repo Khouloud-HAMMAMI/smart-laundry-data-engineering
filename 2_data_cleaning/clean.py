@@ -161,6 +161,13 @@ def clean_remplissage(input_path, output_path):
 
     df = df.rename(columns=rename_map)
 
+   
+
+    # Nettoyage : gestion des NaN
+    # Option 1 : remplir par la moyenne globale
+    df["remplissage_moyen"].fillna(df["remplissage_moyen"].mean(), inplace=True)
+    
+
     # Conversion des montants
     montant_cols = ['total', 'trop_plein', 'etat_avant', 'etat_apres']
     for col in montant_cols:
@@ -306,7 +313,7 @@ def clean_releves(input_path, output_path):
 
 # Exemple d'exécution
 if __name__ == "__main__":
-    clean_releves(
-        "data/laverie1/releves.csv",
-        "data_cleaned/laverie1/releves_cleaned.csv"
+    clean_remplissage(
+        "data/laverie1/remplissages.csv",
+        "data_cleaned/laverie1/remplissages_cleaned.csv"
     )

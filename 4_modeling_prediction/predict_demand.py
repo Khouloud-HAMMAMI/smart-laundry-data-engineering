@@ -1,21 +1,39 @@
 import pandas as pd
+import numpy as np
 from prophet import Prophet
 import matplotlib.pyplot as plt
-import os
-import holidays
-import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
-# Chargement des données
-df = pd.read_csv("./data_cleaned/laverie1/transactions_jour_cleaned.csv", parse_dates=["date"])
-df = df.rename(columns={"date": "ds", "ca_tot": "y"})
-df = df.dropna()
+import holidays
+import os
 
-# Ajout de variables temporelles
+# Chargement des données CA
+df_ca = pd.read_csv("./data_cleaned/laverie1/transactions_jour_cleaned.csv", parse_dates=["date"])
+df_ca = df_ca.rename(columns={"date": "ds", "ca_tot": "y"}).dropna()
+
+# Remplissage (on suppose que la moyenne quotidienne reflète le flux client)
+df_remplissage = pd.read_csv("./data_cleaned/laverie1/remplissage_cleaned.csv", parse_dates=["datetime"])
+df_remplissage["date"] = df_remplissage["datetime"].dt.date
+df_remplissage_grouped = df_remplissage.groupby("date")["total"].mean().reset_index()
+df_remplissage_grouped["ds"] = pd.to_datetime(df_remplissage_grouped["date"])
+df_remplissage_grouped = df_remplissage_grouped[["ds", "total"]].rename(columns={"total": "remplissage_moyen"})
+
+# Météo simulée : 30% des jours sont pluvieux
+np.random.seed(42)
+df_weather = pd.DataFrame({
+    "ds": df_ca["ds"],
+    "pluie": np.random.choice([0, 1], size=len(df_ca), p=[0.7, 0.3])
+})
+
+# Fusion des données
+df = df_ca.merge(df_remplissage_grouped, on="ds", how="left")
+df = df.merge(df_weather, on="ds", how="left")
+
+# Variables temporelles
 df["jour_semaine"] = df["ds"].dt.weekday
 df["is_weekend"] = df["jour_semaine"].isin([5, 6]).astype(int)
 df["mois"] = df["ds"].dt.month
 
-# Jours fériés France
+# Jours fériés
 years = df["ds"].dt.year.unique()
 fr_holidays = holidays.France(years=years)
 holidays_df = pd.DataFrame({
@@ -23,50 +41,46 @@ holidays_df = pd.DataFrame({
     "holiday": list(fr_holidays.values())
 })
 
-# Initialiser le modèle avec holidays et régressors
-model = Prophet(holidays=holidays_df)
-model.add_regressor("is_weekend")
-model.add_regressor("jour_semaine")
-model.add_regressor("mois")
-
-# Entraîner le modèle
-model.fit(df[["ds", "y", "is_weekend", "jour_semaine", "mois"]])
-
-# Générer les futures dates (2 ans)
-future = model.make_future_dataframe(periods=730)
-future["jour_semaine"] = future["ds"].dt.weekday
-future["is_weekend"] = future["jour_semaine"].isin([5, 6]).astype(int)
-future["mois"] = future["ds"].dt.month
-# === 2. Split train/test pour évaluation ===
+# Split 80/20
 split_index = int(len(df) * 0.8)
 train = df.iloc[:split_index]
 test = df.iloc[split_index:]
 
+# Initialisation du modèle
+model = Prophet(holidays=holidays_df)
+model.add_regressor("remplissage_moyen")
+model.add_regressor("pluie")
+model.add_regressor("is_weekend")
+
+model.fit(train[["ds", "y", "remplissage_moyen", "pluie", "is_weekend"]])
+
+# Préparation du futur
+future = model.make_future_dataframe(periods=len(test))
+features_future = df[["ds", "remplissage_moyen", "pluie", "is_weekend"]].set_index("ds")
+future = future.set_index("ds").join(features_future).reset_index()
+
 # Prédictions
 forecast = model.predict(future)
-# Extraire les valeurs correspondantes à la période de test
-predicted_test = forecast.set_index("ds").loc[test["ds"]]
-y_true = test.set_index("ds")["y"]
-y_pred = predicted_test["yhat"]
 
-# === 5. Évaluation ===
+# Évaluation
+forecast_eval = forecast.set_index("ds").loc[test["ds"]]
+y_true = test.set_index("ds")["y"]
+y_pred = forecast_eval["yhat"]
+
 mae = mean_absolute_error(y_true, y_pred)
 rmse = np.sqrt(mean_squared_error(y_true, y_pred))
 mape = mean_absolute_percentage_error(y_true, y_pred)
 
-print("=== Évaluation sur les données test ===")
+print("=== Évaluation du modèle enrichi ===")
 print(f"MAE  : {mae:.2f} €")
 print(f"RMSE : {rmse:.2f} €")
 print(f"MAPE : {mape*100:.2f} %")
-# Sauvegarder les résultats
-os.makedirs("./outputs", exist_ok=True)
-forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].to_csv("./outputs/forecast_ca_2y_advanced.csv", index=False)
 
-# Graphique
-fig = model.plot(forecast)
-plt.title("Prévision du CA avec variables externes")
-plt.tight_layout()
+# Enregistrer graphique et CSV
 os.makedirs("./3_eda_visualisation/graphs", exist_ok=True)
-fig.savefig("./3_eda_visualisation/graphs/forecast_ca_advanced.png")
+fig = model.plot(forecast)
+plt.title("Prévision CA avec météo et remplissage")
+plt.tight_layout()
+fig.savefig("./3_eda_visualisation/graphs/forecast_ca_enrichi.png")
 
-print("[✓] Modèle enrichi entraîné et prévisions enregistrées.")
+forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].to_csv("./outputs/forecast_ca_enrichi.csv", index=False)
