@@ -307,9 +307,3 @@ def clean_releves(input_path, output_path):
     print(f"[✓] Données nettoyées sauvegardées dans : {output_path}")
 
 
-# Exemple d'exécution
-if __name__ == "__main__":
-    clean_remplissage(
-        "data/laverie1/remplissages.csv",
-        "data_cleaned/laverie1/remplissages_cleaned.csv"
-    )
