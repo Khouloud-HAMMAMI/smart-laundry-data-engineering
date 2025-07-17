@@ -1,0 +1,119 @@
+﻿"Growth and structure of the population in 2020"
+"Municipality of Boulogne-sur-Mer (62160)"
+"© Insee"
+
+
+"POP T0 - Population estimates by age range"
+"";"2009";"%";"2014";"%";"2020";"%";
+"Altogether";"43310";"100,0";"42476";"100,0";"40588";"100,0";
+"0 to 14 years old";"8422";"19,4";"8484";"20,0";"7112";"17,5";
+"15 to 29 years old";"10422";"24,1";"9417";"22,2";"8760";"21,6";
+"30 to 44 years old";"7982";"18,4";"7867";"18,5";"7254";"17,9";
+"45 to 59 years old";"8009";"18,5";"7632";"18,0";"7292";"18,0";
+"60 to 74 years old";"4945";"11,4";"5431";"12,8";"6555";"16,1";
+"75 and over";"3530";"8,2";"3644";"8,6";"3615";"8,9";
+
+"Sources: Insee, RP2009, RP2014 and RP2020, main operations, geography as of 01/01/2023."
+
+
+"POP G2 - Population estimates by age range"
+"";"2009";"2014";"2020";
+"0 to 14 years old";"19,4";"20,0";"17,5";
+"15 to 29 years old";"24,1";"22,2";"21,6";
+"30 to 44 years old";"18,4";"18,5";"17,9";
+"45 to 59 years old";"18,5";"18,0";"18,0";
+"60 to 74 years old";"11,4";"12,8";"16,1";
+"75 and over";"8,2";"8,6";"8,9";
+
+"Sources: Insee, RP2009, RP2014 and RP2020, main operations, geography as of 01/01/2023."
+
+
+"POP T1 - Population since 1968: population and average density (residents per square kilometre)"
+"";"1968(*)";"1975(*)";"1982";"1990";"1999";"2009";"2014";"2020";
+"Population";"49288";"48440";"47653";"43678";"44859";"43310";"42476";"40588";
+"Average density (inhab / km²)";"5853,7";"5753,0";"5659,5";"5187,4";"5327,7";"5143,7";"5044,7";"4820,4";
+
+"(*) 1967 and 1974 for overseas departments (DOM)"
+"The data proposed is established for the same geographical scope, in the geography in force on 01/01/2023."
+"Sources: Insee, RP1967 to 1999 counts, RP2009 to RP2020 main holdings."
+
+
+"POP T2M - Demographic indicators since 1968"
+"";"1968 to 1975";"1975 to 1982";"1982 to 1990";"1990 to 1999";"1999 to 2009";"2009 to 2014";"2014 to 2020";
+"Average annual change in population in %";"-0,2";"-0,2";"-1,1";"0,3";"-0,4";"-0,4";"-0,8";
+"due to the natural balance in %";"0,9";"0,7";"0,6";"0,6";"0,5";"0,4";"0,2";
+"due to the apparent balance of inflows and outflows in %";"-1,1";"-0,9";"-1,7";"-0,3";"-0,9";"-0,8";"-0,9";
+"Natality rate (‰)";"21,6";"19,2";"18,5";"17,7";"16,6";"15,5";"12,9";
+"Mortality rate (‰)";"12,8";"12,6";"12,1";"11,7";"11,1";"11,1";"11,2";
+
+"The data proposed is established for the same geographical scope, in the geography in force on 01/01/2023"
+"Sources: Insee, RP1968 to 1999 counts, RP2009 to RP2020 main holdings - Civil status"
+
+
+"POP T3 - Population by age and sex in 2020"
+"";"Male";"%";"Female";"%";
+"Altogether";"19060";"100,0";"21528";"100,0";
+"0 to 14 years old";"3514";"18,4";"3599";"16,7";
+"15 to 29 years old";"4455";"23,4";"4305";"20,0";
+"30 to 44 years old";"3781";"19,8";"3472";"16,1";
+"45 to 59 years old";"3479";"18,3";"3813";"17,7";
+"60 to 74 years old";"2759";"14,5";"3796";"17,6";
+"75 to 89 years old";"1002";"5,3";"2101";"9,8";
+"90 years and over";"69";"0,4";"442";"2,1";
+"";"";"";"";"";
+"0 to 19 years old";"4926";"25,8";"4902";"22,8";
+"20 to 64 years old";"11348";"59,5";"11634";"54,0";
+"65 and over";"2787";"14,6";"4992";"23,2";
+
+"Source: Insee, RP2020 main operation, geography as of 01/01/2023."
+
+
+"POP T4 - Home address 1 year before the study"
+"";"2014";"%";"2020";"%";
+"People one year old and over, previously living:";"41799";"100,0";"40038";"100,0";
+"In the same house";"34596";"82,8";"33579";"83,9";
+"In another house in the same town";"4208";"10,1";"3513";"8,8";
+"In another town";"2995";"7,2";"2945";"7,4";
+
+"Source: Insee, RP2020 main operation, geography as of 01/01/2023."
+
+
+"POP G3 - Home address 1 year before for people living in another house, by age in %"
+"";"In another house in the same town";"In another town";
+"1 to 14 years old";"63,5";"36,5";
+"15 to 24 years old";"48,4";"51,6";
+"25 to 54 years old";"54,6";"45,4";
+"55 years old and over";"52,9";"47,1";
+
+"Source: Insee, RP2020 main operation, geography as of 01/01/2023."
+
+
+"POP T5 - Population aged 15 years and over by socioprofessional classification"
+"";"2009";"%";"2014";"%";"2020";"%";
+"Altogether";"34886";"100,0";"34007";"100,0";"33462";"100,0";
+"Farmer operators";"11";"0,0";"13";"0,0";"9";"0,0";
+"Craftsmen, traders, business leaders";"812";"2,3";"786";"2,3";"854";"2,6";
+"Managers and higher intellectual professions";"1588";"4,6";"1531";"4,5";"1549";"4,6";
+"Middle-level occupations";"3699";"10,6";"3663";"10,8";"3401";"10,2";
+"Services employee";"5996";"17,2";"5857";"17,2";"5676";"17,0";
+"Blue-collar workers";"5868";"16,8";"5786";"17,0";"5538";"16,6";
+"Retirees";"8329";"23,9";"8181";"24,1";"8357";"25,0";
+"Other people with no professional activity";"8583";"24,6";"8190";"24,1";"8076";"24,1";
+
+"Sources: Insee, RP2009, RP2014 and RP2020, additional operations, geography as of 01/01/2023."
+
+
+"POP T6 - Population aged 15 years and over by sex, age and socioprofessional classification in 2020"
+"";"Male";"Female";"Share in % of the population aged";
+"15 to 24 years old";"25 to 54 years old";"55 years and over";
+"Altogether";"15546";"17916";"100,0";"100,0";"100,0";
+"Farmer operators";"9";"0";"0,0";"0,1";"0,0";
+"Craftsmen, traders, business leaders";"589";"266";"0,9";"4,2";"1,4";
+"Managers and higher intellectual professions";"938";"611";"1,2";"7,8";"2,5";
+"Middle-level occupations";"1716";"1685";"6,8";"17,2";"3,4";
+"Services employee";"1666";"4010";"16,1";"25,7";"7,0";
+"Blue-collar workers";"4368";"1170";"14,1";"26,9";"5,4";
+"Retirees";"3304";"5053";"0,0";"0,2";"66,2";
+"Other people without professional activity";"2955";"5122";"60,9";"18,1";"14,1";
+
+"Source: Insee, RP2020 additional operation, geography as of 01/01/2023."
