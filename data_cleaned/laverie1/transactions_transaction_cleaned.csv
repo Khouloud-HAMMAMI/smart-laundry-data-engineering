@@ -1,4 +1,4 @@
-"""n°_transaction""",date/heure(europe/paris),type,details,selection,description,pièce,billet,carte_bancaire,fidélitée,prix,insérée,rendue
+"""n°_transaction""",date,type,details,selection,description,pièce,billet,carte_bancaire,fidélitée,prix,insérée,rendue
 65764.0,2025-07-01 17:49:03,démarrage,*,14.0,Machine 16 kg,0.0,0,9.0,0,9.0,9.0,0.0
 65763.0,2025-07-01 17:47:43,démarrage,*,15.0,Machine 16 kg,0.0,0,9.0,0,9.0,9.0,0.0
 65762.0,2025-07-01 17:46:02,démarrage,*,34.0,Lessive  ,0.0,0,1.2,0,1.2,1.2,0.0
