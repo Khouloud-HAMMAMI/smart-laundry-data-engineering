@@ -1,4 +1,4 @@
-id,datetime,total,trop_plein,deux_euros,un_euro,cinquante_centimes,vingt_centimes,dix_centimes,etat_avant,etat_apres
+id,date,total,trop_plein,deux_euros,un_euro,cinquante_centimes,vingt_centimes,dix_centimes,etat_avant,etat_apres
 18,2024-08-21 08:17:22,8.1,0.0,0.0,0.0,9.0,11.0,14.0,185.0,193.1
 19,2024-08-21 08:22:21,15.0,0.0,0.0,0.0,18.0,14.0,32.0,193.1,208.1
 20,2024-09-05 10:13:51,160.1,0.0,60.0,22.0,23.0,32.0,2.0,45.1,205.2
