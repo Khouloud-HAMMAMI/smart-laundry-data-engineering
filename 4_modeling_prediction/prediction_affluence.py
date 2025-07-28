@@ -52,7 +52,7 @@ print(f"R²: {r2_score(y_test, y_pred):.2f}")
 
 # 🔹 Sauvegarde du modèle
 import joblib
-joblib.dump(model, "4_modeling_prediction/models/model_affluence_v2.pkl")
+joblib.dump(model, "4_modeling_prediction/models/model_affluence_final.pkl")
 
 
 
@@ -107,6 +107,4 @@ print(f"MAE: {mean_absolute_error(y_test, y_pred):.2f}")
 print(f"RMSE: {np.sqrt(mean_squared_error(y_test, y_pred)):.2f}")
 print(f"R²: {r2_score(y_test, y_pred):.2f}")
 
-# 🔹 Sauvegarde du modèle
-import joblib
-joblib.dump(model, "4_modeling_prediction/models/model_affluence_xgb.pkl")
+
