@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 # Charger le PDF
-pdf_path = "Bailleul-Alertes-20250711181826.pdf"
+pdf_path = "Bailleul-Alertes.pdf"
 data = []
 
 with pdfplumber.open(pdf_path) as pdf:
