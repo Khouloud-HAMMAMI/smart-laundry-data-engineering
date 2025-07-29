@@ -21,9 +21,9 @@ print(df["anomalie"].value_counts())
 # Définition des variables explicatives
 features = [
     "ca_tot", "nb_transactions", "total_rempli", "kWh",
-    "nb_alertes_total", "nb_alertes_critiques", "nb_alertes_importantes",
+    "nb_alertes_total",
     "nb_alertes_tube", "nb_alertes_choc",
-    "nb_alertes_lecteur", "nb_alertes_defaut_monnaie", "nb_alertes_trop_plein"
+    "nb_alertes_lecteur", 
 ]
 
 # Vérification des colonnes manquantes

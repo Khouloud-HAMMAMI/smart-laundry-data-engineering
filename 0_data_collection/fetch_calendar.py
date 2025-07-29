@@ -3,10 +3,10 @@ import holidays
 from datetime import datetime, timedelta
 
 # Paramètres
-annee = 2024, 2025
+annee = 2024, 2030
 zone = "B"  # Ex : Boulogne est en zone C
 start_date = datetime(2024, 1, 1)
-end_date = datetime(2025, 6, 1)
+end_date = datetime(2030, 6, 1)
 
 # Jours fériés
 jours_feries = holidays.France(years=annee)
