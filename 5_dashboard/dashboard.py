@@ -13,6 +13,7 @@ df = pd.read_csv("data_final/merged_laverie1.csv", parse_dates=["date"])
 model_affluence = joblib.load("4_modeling_prediction/models/model_affluence_final.pkl")
 model_ca = joblib.load("4_modeling_prediction/models/model_ca_xgb_final.pkl")
 model_energie = joblib.load("4_modeling_prediction/models/model_energie_final.pkl")
+model_maintenance = joblib.load("4_modeling_prediction/models/model_maintenance.pkl")
 
 # Liste des features utilisées pour la prédiction énergétique
 energie_features = [
@@ -39,7 +40,9 @@ st.set_page_config(page_title="Smart Laundry Dashboard", layout="wide")
 
 # === Navigation ===
 st.sidebar.title("🔍 Navigation")
-section = st.sidebar.radio("Choisir une section :", ["📊 Optimisation Machines", "💰 Optimisation CA", "⚡ Énergie & Durabilité"])
+section = st.sidebar.radio("Choisir une section :", ["📊 Optimisation Machines", "💰 Optimisation CA", 
+                                                     "⚡ Énergie & Durabilité",
+        "🛠️ Maintenance & Gestion Monétaire"])
 
 # === 📊 Optimisation Machines ===
 if section == "📊 Optimisation Machines":
@@ -294,3 +297,53 @@ if section == "⚡ Énergie & Durabilité":
     except Exception as e:
         st.error(f"Erreur dans les recommandations : {e}")
 
+
+# === 🛠️ Maintenance & Gestion Monétaire ===
+elif section == "🛠️ Maintenance & Gestion Monétaire":
+    st.title("🛠️ Maintenance & Remplissage")
+
+    st.subheader("📈 Suivi historique des remplissages")
+    st.line_chart(df.set_index("date")["nb_remplissages"])
+
+    st.subheader("🔍 Prédiction du besoin de remplissage")
+    jour = st.selectbox("Jour (0=lundi)", range(7), key="mnt_jour")
+    mois = st.selectbox("Mois", range(1, 13), key="mnt_mois")
+    annee = st.number_input("Année", 2023, 2026, datetime.today().year, key="mnt_annee")
+    date_pred = pd.to_datetime(f"{annee}-{mois:02d}-01") + pd.to_timedelta(jour, unit="D")
+
+    input_pred = pd.DataFrame([{
+        "ca_tot": df["ca_tot"].mean(),
+        "nb_transactions": df["nb_transactions"].mean(),
+        "total_rempli": df["total_rempli"].mean(),
+        "kWh": df["kWh"].mean(),
+        "nb_alertes_total": df["nb_alertes_total"].mean(),
+        "nb_alertes_monnaie": df["nb_alertes_monnaie"].mean(),
+        "nb_alertes_lecteur": df["nb_alertes_lecteur"].mean(),
+        "nb_alertes_tube": df["nb_alertes_tube"].mean(),
+        "nb_alertes_choc": df["nb_alertes_choc"].mean()
+    }])
+
+    pred = model_maintenance.predict(input_pred)[0]
+    prob = model_maintenance.predict_proba(input_pred)[0][1]
+
+    if pred == 1:
+        st.error(f"🚨 Risque de remplissage détecté ({prob*100:.1f}%) le {date_pred.date()}")
+    else:
+        st.success(f"✅ Aucun remplissage anticipé ({(1 - prob) * 100:.1f}%) le {date_pred.date()}")
+
+    st.subheader("🧪 Niveau total de remplissage")
+    st.line_chart(df.set_index("date")["total_rempli"])
+
+    st.subheader("📅 Derniers remplissages critiques")
+    seuil = df["total_rempli"].quantile(0.9)
+    remplis = df[df["total_rempli"] >= seuil][["date", "total_rempli"]].tail(5)
+    st.dataframe(remplis)
+
+    st.subheader("📊 Alerte monétaire & anomalies")
+    alert_cols = [
+        "nb_alertes_total", "nb_alertes_critique", "nb_alertes_importante",
+        "nb_alertes_monnaie", "nb_alertes_lecteur", "nb_alertes_tube", "nb_alertes_erreur_0105"
+    ]
+    st.line_chart(df.set_index("date")[alert_cols])
+
+# Tu peux ajouter les deux autres sections ici (📊 Optimisation Machines, 💰 Optimisation CA)
