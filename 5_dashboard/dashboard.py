@@ -1,4 +1,4 @@
-# ✅ dashboard.py - Version enrichie avec heatmap, courbe horaire et recommandations
+# ✅ dashboard.py - Version automatisée avec chargement depuis Supabase
 
 import streamlit as st
 import pandas as pd
@@ -7,44 +7,62 @@ import joblib
 import plotly.express as px
 import json
 from datetime import datetime
+from sqlalchemy import create_engine
+
+# === Connexion à la base Supabase ===
+engine = create_engine("postgresql://postgres:0123SmartLandry@db.rtqlbeculijkyokemkis.supabase.co:5432/postgres")
+
+# === Fonctions ===
+def load_table(table):
+    return pd.read_sql(f"SELECT * FROM smart_laundry.{table}", engine)
 
 # === Chargement des données et modèles ===
-df = pd.read_csv("data_final/merged_laverie1.csv", parse_dates=["date"])
+df = load_table("laverie1_daily")
+df["date"] = pd.to_datetime(df["date"])  # ✅ conversion
+
+affluence_df = load_table("affluence_hourly")
 model_affluence = joblib.load("4_modeling_prediction/models/model_affluence_final.pkl")
 model_ca = joblib.load("4_modeling_prediction/models/model_ca_xgb_final.pkl")
 model_energie = joblib.load("4_modeling_prediction/models/model_energie_final.pkl")
 model_maintenance = joblib.load("4_modeling_prediction/models/model_maintenance.pkl")
-
-# Liste des features utilisées pour la prédiction énergétique
-energie_features = [
-    "tempmax", "tempmin", "precip",
-    "ca_tot", "nb_transactions", "total_rempli",
-    "nb_alertes_total", "co2_estime",
-    "dayofweek", "month", "is_weekend", "heure"
-]
+model_energy_aff = joblib.load("4_modeling_prediction/models/model_energie_from_affluence.pkl")
 
 with open("4_modeling_prediction/models/affluence_features.json") as f:
     affluence_features = json.load(f)
 
-# === Chargement météo et calendrier ===
+# === Chargement des données externes ===
+weather = pd.read_csv("data_external/donnees_API_meteo_bailleul.csv", parse_dates=["date"])
 cal = pd.read_csv("data_external/calendrier-scolaire-Ferie.csv", parse_dates=["date"])
 cal["ferie"] = cal["type"] == "jour_férié"
 cal["vacances"] = cal["type"] == "vacances_scolaires"
 cal = cal.groupby("date")[["ferie", "vacances"]].max().reset_index()
 
-weather = pd.read_csv("data_external/donnees_API_meteo_bailleul.csv", parse_dates=["date"])
-weather["precip"] = pd.to_numeric(weather["precip"], errors="coerce")
-weather = weather[["date", "tempmax", "tempmin", "precip"]]
-
+# === Configuration de Streamlit ===
 st.set_page_config(page_title="Smart Laundry Dashboard", layout="wide")
 
 # === Navigation ===
 st.sidebar.title("🔍 Navigation")
-section = st.sidebar.radio("Choisir une section :", ["📊 Optimisation Machines", "💰 Optimisation CA", 
-                                                     "⚡ Énergie & Durabilité",
-        "🛠️ Maintenance & Gestion Monétaire"])
+section = st.sidebar.radio("Choisir une section :", [
+    "📊 Optimisation Machines",
+    "💰 Optimisation CA",
+    "⚡ Énergie & Durabilité",
+    "🛠️ Maintenance & Gestion Monétaire"
+])
 
-# === 📊 Optimisation Machines ===
+# ✅ Modules : 
+
+# Tu peux ici copier-coller **chaque section** (ex: "📊 Optimisation Machines") 
+# depuis ton script original, sans avoir à modifier la logique. 
+# Le seul changement est que les données sont chargées via `load_table(...)`
+
+# Pour les autres sections, remplace aussi :
+# pd.read_csv("data_final/affluence_laverie1.csv") -> affluence_df
+# df = pd.read_csv(...)                      -> df = load_table("laverie1_daily")
+
+# ✅ Bonus : Ajoute un indicateur de dernière mise à jour
+st.sidebar.markdown(f"**🔄 Données mises à jour le :** {df['date'].max().date()}")
+
+# Tu peux ensuite appeler chaque bloc de section avec :
 if section == "📊 Optimisation Machines":
     st.title("📊 Optimisation de l’usage des machines")
     st.subheader("Analyse de l'affluence (historique & prédiction)")
@@ -130,10 +148,9 @@ if section == "📊 Optimisation Machines":
     pred_input = pd.DataFrame([input_data])[affluence_features]
     pred_affluence = model_affluence.predict(pred_input)[0]
     st.metric("🔮 Prédiction affluence", f"{int(pred_affluence)} clients")
+    pass
 
-
-    # === 💰 Optimisation CA ===
-if section == "💰 Optimisation CA":
+elif section == "💰 Optimisation CA":
     st.title("💰 Optimisation du chiffre d'affaires")
     st.write("### Évolution historique du chiffre d’affaires")
     st.line_chart(df.set_index("date")["ca_tot"])
@@ -203,10 +220,8 @@ if section == "💰 Optimisation CA":
     heures_creuses = heure_moy.head(3).index.tolist()
     creux = ", ".join([f"{h}h" for h in heures_creuses])
     st.info(f"Proposez des tarifs réduits à : {creux} (heures de faible affluence)")
+    pass
 
-
-
-# === ⚡ Énergie & Durabilité ===
 if section == "⚡ Énergie & Durabilité":
     st.title("⚡️ Analyse énergétique")
 
@@ -298,6 +313,8 @@ if section == "⚡ Énergie & Durabilité":
         st.error(f"Erreur dans les recommandations : {e}")
 
 
+    pass
+
 # === 🛠️ Maintenance & Gestion Monétaire ===
 elif section == "🛠️ Maintenance & Gestion Monétaire":
     st.title("🛠️ Maintenance & Remplissage")
@@ -346,4 +363,4 @@ elif section == "🛠️ Maintenance & Gestion Monétaire":
     ]
     st.line_chart(df.set_index("date")[alert_cols])
 
-# Tu peux ajouter les deux autres sections ici (📊 Optimisation Machines, 💰 Optimisation CA)
+    pass
